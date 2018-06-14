@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<script>
+    window.onload = function () {
+        // var order = function (orderType, pay, stock) {
+        //     if (orderType === 1) { // 500 元定金购买模式
+        //         if (pay === true) { // 已支付定金
+        //             console.log('500 元定金预购, 得到100 优惠券');
+        //         } else { // 未支付定金，降级到普通购买模式
+        //             if (stock > 0) { // 用于普通购买的手机还有库存
+        //                 console.log('普通购买, 无优惠券');
+        //             } else {
+        //                 console.log('手机库存不足');
+        //             }
+        //         }
+        //     } else if (orderType === 2) { // 200 元定金购买模式
+        //         if (pay === true) {
+        //             console.log('200 元定金预购, 得到50 优惠券');
+        //         } else {
+        //             if (stock > 0) {
+        //                 console.log('普通购买, 无优惠券');
+        //             } else {
+        //                 console.log('手机库存不足');
+        //             }
+        //         }
+        //     } else if (orderType === 3) {
+        //         if (stock > 0) {
+        //             console.log('普通购买, 无优惠券');
+        //         } else {
+        //             console.log('手机库存不足');
+        //         }
+        //     }
+        // };
+        // order(1, true, 500); // 输出： 500 元定金预购, 得到100 优惠券
+
+        // // 500 元订单
+        // var order500 = function (orderType, pay, stock) {
+        //     if (orderType === 1 && pay === true) {
+        //         console.log('500 元定金预购, 得到100 优惠券');
+        //     } else {
+        //         order200(orderType, pay, stock); // 将请求传递给200 元订单
+        //     }
+        // };
+        // // 200 元订单
+        // var order200 = function (orderType, pay, stock) {
+        //     if (orderType === 2 && pay === true) {
+        //         console.log('200 元定金预购, 得到50 优惠券');
+        //     } else {
+        //         orderNormal(orderType, pay, stock); // 将请求传递给普通订单
+        //     }
+        // };
+        // // 普通购买订单
+        // var orderNormal = function (orderType, pay, stock) {
+        //     if (stock > 0) {
+        //         console.log('普通购买, 无优惠券');
+        //     } else {
+        //         console.log('手机库存不足');
+        //     }
+        // };
+        // // 测试结果：
+        // order500(1, true, 500); // 输出：500 元定金预购, 得到100 优惠券
+        // order500(1, false, 500); // 输出：普通购买, 无优惠券
+        // order500(2, true, 500); // 输出：200 元定金预购, 得到500 优惠券
+        // order500(3, false, 500); // 输出：普通购买, 无优惠券
+        // order500(3, false, 0); // 输出：手机库存不足
+        
+
+        var order500 = function (type, pay, remain) {
+            if (type === 500 && pay === true) {
+                console.log('500元定金预购，得到100元优惠券')
+            } else {
+                return 'next'
+            }
+        }
+
+        var order200 = function (type, pay, remain) {
+            if (type === 200 && pay === true) {
+                console.log('200元定金预购，得到50元优惠券')
+            } else {
+                return 'next'
+            }
+        }
+
+        var orderNormal = function (type, pay, remain) {
+            if (type === 0 && pay === true) {
+                if (remain > 0) {
+                    console.log('普通购买无优惠券')
+                } else {
+                    console.log('剩余不足')
+                }         
+            }
+        }
+
+        var Chain = function (fn) {
+            this.fn = fn
+            this.next = null
+        }
+        Chain.prototype.setNext = function (next) {
+            this.next = next
+        }
+        Chain.prototype.toNext = function () {
+            var result = this.fn.apply(this, arguments)
+            if (result === 'next') {
+                return this.next && this.next.toNext.apply(this.next, arguments)
+            }
+            return result
+        }
+        var chainOrder500 =  new Chain(order500)
+        var chainOrder200 = new Chain(order200)
+        var chainOrderNormal = new Chain(orderNormal)
+
+        chainOrder500.setNext(chainOrder200)
+        chainOrder200.setNext(chainOrderNormal)
+
+        var final = chainOrder500.toNext(0, true, 50)
+    }
+</script>
+
+<body>
+
+</body>
+
+</html>

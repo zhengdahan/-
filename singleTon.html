@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    window.onload = function () {
+      // function singleTon (name) {
+      //   this.name = name;
+      //   this.instance = null;
+      // }
+      // singleTon.getInstance = function (name) {
+      //   if (!this.instance) {
+      //     this.instance = new singleTon(name)
+      //   }
+      //   return this.instance
+      // }
+      // let a = singleTon.getInstance('1')
+      // let b = singleTon.getInstance('2')
+      // console.log(a===b)
+
+      function singleTon (name) {
+        this.name = name
+        this.init();
+      }
+      singleTon.prototype.init = function () {
+        let div = document.createElement('div')
+        div.innerHTML = this.name
+        document.body.appendChild(div)
+      }
+
+      var proxySingleTonCreateDiv = (function () {
+        var instance;
+        return function (name) {
+          if (!instance) {
+            return instance = new singleTon(name)
+          }
+          return instance
+        }
+      })()
+      
+      let a = new proxySingleTonCreateDiv('a')
+      let b = new proxySingleTonCreateDiv('b')
+      console.log(a===b)
+    }
+  </script>
+</body>
+</html>
